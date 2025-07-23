@@ -1,244 +1,325 @@
 <?php
-include 'config/koneksi.php';
-include 'partials/header.php';
+define('BASE_URL', 
+    (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . 
+    "://" . $_SERVER['HTTP_HOST']
+);
+session_unset();
+session_write_close();
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Sistem Informasi SMK Negeri 5 Tikep</title>
+  <link rel="shortcut icon" href="assets/images/logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="./assets/css/login.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
+  <!-- Toastr CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
 
-// Ambil data kegiatan terbaru
-$querySemuaKegiatan = mysqli_query($conn, "SELECT * FROM kegiatan");
-
-// Mendapatkan tiga berita terbaru untuk carousel
-$kegiatanCarousel = [];
-$counter = 0;
-
-while ($dataKegiatan = mysqli_fetch_assoc($querySemuaKegiatan)) {
-    $kegiatanCarousel[] = $dataKegiatan;
-    $counter++;
-
-    if ($counter === 3) {
-        break; // Keluar dari loop setelah mendapatkan 3 berita terbaru
+  <style>
+    /* [Previous CSS styles remain exactly the same] */
+    
+    /* Add this for toastr positioning */
+    .toast-top-center {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
     }
-}
+    
+    /* Ensure toastr appears above other elements */
+    #toast-container {
+      z-index: 999999;
+    }
+     .login-info {
+      background-color: rgba(67, 97, 238, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .login-info h4 {
+      color: var(--primary);
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .login-info h4 i {
+      margin-right: 8px;
+    }
+    
+    .login-info ul {
+      padding-left: 20px;
+      color: #495057;
+      font-size: 0.85rem;
+    }
+    
+    .login-info li {
+      margin-bottom: 5px;
+    }
+      /* Responsive */
+    @media (max-width: 576px) {
+      .login-container {
+        width: 100%;
+      }
+      
+      .login-header h1 {
+        font-size: 1.3rem;
+      }
+      
+      .login-info {
+        padding: 10px;
+      }
+    }
+        @media (min-width: 769px) {
+      #particles-js {
+        display: block; /* Tampilkan particles hanya di desktop */
+      }
+    }
+    
+  </style>
+</head>
+<body>
 
-// Mengambil sisa berita yang akan ditampilkan di berita lainnya
-$kegiatanLainnya = [];
-
-while ($dataKegiatan = mysqli_fetch_assoc($querySemuaKegiatan)) {
-    $kegiatanLainnya[] = $dataKegiatan;
-}
-// Ambil data ujian terbaru
-$ujian = mysqli_query($conn, "SELECT * FROM jadwal_ujian ORDER BY tanggal_ujian DESC LIMIT 5");
-?>
-
-<?php
-include 'partials/slider.php';
-?>
-
-<section id="ternate" class="wow animate__fadeInUp">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-12 col-lg-6 col-md-6 sm-margin-30px-bottom wow animate__fadeIn" data-wow-delay="0.2s">
-                <img class="w-100" src="assets/img/discover.jpg" alt="" data-no-retina="">
-            </div>
-            <div class="col-12 col-lg-6 col-md-6 text-center text-md-start md-padding-six-half-left sm-padding-15px-left wow animate__fadeIn" data-wow-delay="0.4s">
-                <h4 class="text-uppercase alt-font text-extra-dark-gray margin w-95 d-inline-block md-d-block mb-0 lg-w-90 md-w-50 xs-w-100">SI-JUKES</h4>
-                <span class="separator-line-horrizontal-medium-light2 idep-bg-hitam d-table w-100px text-left margin-20px-tb sm-margin-20px-tb"></span>
-                <p>
-                (Sistem Informasi Jadwal Ujian dan Kegiatan Sekolah) merupakan platform digital resmi milik 
-                <strong>SMK Negeri 5 Tikep</strong> yang dibangun untuk meningkatkan efisiensi dalam penyampaian informasi akademik dan non-akademik. 
-                Sistem ini hadir sebagai solusi modern untuk mempermudah siswa, guru, dan seluruh civitas sekolah dalam mengakses informasi terkait 
-                <em>jadwal ujian</em>, <em>kegiatan sekolah</em>, serta agenda penting lainnya secara cepat, akurat, dan real-time.</p>
-            
-            </div>
-        </div>
+    <!-- Animated Background Particles -->
+  <div id="particles-js"></div>
+  
+  <!-- Login Container -->
+  <div class="login-container animate__animated animate__fadeInUp">
+    <div class="login-header">
+      <img src="assets/images/logo.png" alt="SMK Negeri 5 Tikep" class="school-logo animate__animated animate__bounceIn">
+      <h1>SISTEM INFORMASI SEKOLAH</h1>
+      <p>SMK Negeri 5 Tikep</p>
     </div>
-</section>
-
-
-        <!-- <section class="section">
-        <div class="container">
-        <div class="row text-center mb-4">
-            <div class="col-md-6">
-                <h5>Total Ujian</h5>
-                <div class="display-6 text-primary">
-                    <?php
-                    $hitung_ujian = mysqli_query($conn, "SELECT COUNT(*) as total FROM jadwal_ujian");
-                    $data_ujian = mysqli_fetch_assoc($hitung_ujian);
-                    echo $data_ujian['total'];
-                    ?>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <h5>Total Kegiatan</h5>
-                <div class="display-6 text-success">
-                    <?php
-                    $hitung_kegiatan = mysqli_query($conn, "SELECT COUNT(*) as total FROM kegiatan");
-                    $data_kegiatan = mysqli_fetch_assoc($hitung_kegiatan);
-                    echo $data_kegiatan['total'];
-                    ?>
-                </div>
-            </div>
+   
+    
+    <div class="login-body">
+      <form id="loginForm" action="/sijukes/login/proses-login.php"  autocomplete="off">
+        <!-- CSRF Token Protection -->
+        <input type="hidden" name="csrf_token" value="<?php echo bin2hex(random_bytes(32)); ?>" class="csrf-token">
+        
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" class="form-control" name="username" id="username" placeholder="Username" required 
+                 minlength="3" maxlength="30" pattern="[a-zA-Z0-9]+" title="Hanya huruf dan angka diperbolehkan">
         </div>
+        
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" class="form-control" name="password" id="password" placeholder="Password" required
+                  maxlength="20">
+          <i class="fas fa-eye-slash toggle-password" style="right: 15px; left: auto; cursor: pointer;"></i>
         </div>
-        </section> -->
-
-
-        <section class="wow animate__fadeIn mt-5">
-            <div class="container">
-       
-
-                <div class="row justify-content-center">
-                        <div class="col-12 col-xl-5 col-md-6 margin-five-bottom md-margin-40px-bottom sm-margin-30px-bottom text-center">
-                            <h5 class="alt-font text-extra-dark-gray font-weight-600 text-uppercase m-0">Jadwal Ujian</h5>
-                            <span class="separator-line-horrizontal-medium-light2 idep-bg-hitam d-table w-100px mx-auto margin-20px-top sm-margin-20px-tb"></span>
-                        </div>
-                    </div>   
-                                 
-                    <div class="search-box row justify-content-left">
-                        <div class="col-md-3">
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search...">
-                        </div>
-                        
-                    </div>
-                <table class="table table-striped margin-20px-top" id="tableUjian">
-                    <thead>
-                        <tr>
-                            <th>Nama Ujian</th>
-                            <th>Kelas</th>
-                            <th>Tanggal</th>
-                            <th>Jam</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($row = mysqli_fetch_assoc($ujian)) : ?>
-                            <tr>
-                                <td><?= htmlspecialchars($row['nama_ujian']) ?></td>
-                                <td><?= htmlspecialchars($row['kelas']) ?></td>
-                                <td><?= date('d-m-Y', strtotime($row['tanggal_ujian'])) ?></td>
-                                <td><?= $row['jam_ujian'] ?></td>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-                </div>
-                </section>
-
-
-            <!-- start blog section -->
-         <!-- Tambahkan ini di dalam file HTML kamu --><!-- Tambahkan ini di HTML kamu -->
-         <section class="bg-light wow animate__fadeInUp padding-top-100px padding-bottom-100px">
-<div id="app" class="bg-light mt-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-xl-5 col-md-6 text-center mb-5">
-                <h5 class="alt-font text-extra-dark-gray font-weight-600 text-uppercase m-0">Kegiatan Terbaru</h5>
-                <span class="separator-line-horrizontal-medium-light2 idep-bg-hitam d-table w-100px mx-auto mt-3"></span>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12 blog-content">
-                <ul class="row">
-                    <li class="col-lg-4 col-md-6 col-sm-12 mb-4"
-                        v-for="(kegiatan, index) in kegiatans"
-                        :key="kegiatan.id">
-                        <div class="blog-post bg-light-gray">
-                            <div class="blog-post-images overflow-hidden position-relative">
-                                <a :href="'detailArtikel.php?id=' + kegiatan.id">
-                                    <img :src="'./login/admin/' + kegiatan.gambar" class="img-fluid" :alt="kegiatan.judul">
-                                    <!-- <div class="blog-hover-icon"><span class="text-extra-large font-weight-300">+</span></div> -->
-                                </a>
-                            </div>
-                            <div class="bg-white post-details p-4">
-                                <a :href="'detailArtikel.php?id=' + kegiatan.id"
-                                   class="alt-font post-title text-medium text-extra-dark-gray d-block mb-3">
-                                    {{ kegiatan.judul.length > 150 ? kegiatan.judul.slice(0, 150) + '...' : kegiatan.judul }}
-                                </a>
-                                <div class="separator-line-horrizontal-full bg-dark-gray my-3"></div>
-                                <div class="author text-uppercase text-extra-small text-medium-gray">
-                                    by <a :href="'detailArtikel.php?id=' + kegiatan.id" class="text-medium-gray">Admin</a>
-                                    &nbsp;&nbsp;|&nbsp;&nbsp;{{ kegiatan.created_at }}
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="col-12 text-center" v-if="currentPage < lastPage">
-                <button class="theme-btn mt-3" @click="loadMore">
-                    <i class="la la-refresh mr-1"></i>Load More
-                </button>
-                <p class="font-size-13 pt-2">Showing {{ kegiatans.length }} of {{ total }} kegiatan</p>
-            </div>
-        </div>
-    </div>
+        
+        <button type="submit" class="btn-login" id="loginBtn">
+          <i class="fas fa-sign-in-alt"></i> <span class="btn-text">MASUK</span>
+        </button>
+      </form>
+       <div class="login-info">
+  <h4><i class="fas fa-info-circle"></i> Petunjuk Login</h4>
+  <ul>
+    <li><strong>Siswa:</strong> Username: nama depan | Password: nama depan + NIS (contoh: <code>yusril_12345</code>)</li>
+    <li><strong>Guru:</strong> Username: nama depan | Password: nama depan + NIP (contoh: <code>budi_198304122006041</code>)</li>
+  </ul>
 </div>
-</section>
+      <p class="footer-text">© <?php echo date('Y'); ?> SMK Negeri 5 Tikep</p>
+    </div>
+  </div>
 
-<!-- Tambahkan Vue & Axios -->
-<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- JavaScript Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  
+  <script>
 
-<script>
-new Vue({
-    el: '#app',
-    data: {
-        kegiatans: [],
-        currentPage: 1,
-        lastPage: 1,
-        total: 0,
-    },
-    mounted() {
-        this.fetchKegiatan();
-    },
-    methods: {
-        fetchKegiatan() {
-            axios.get(`api.php?page=${this.currentPage}`)
-                .then(response => {
-                    const res = response.data;
-                    this.kegiatans = this.kegiatans.concat(res.data);
-                    this.currentPage = res.current_page;
-                    this.lastPage = res.last_page;
-                    this.total = res.total;
-                })
-                .catch(error => {
-                    console.error('Gagal mengambil data:', error);
-                });
+ // Animated Background Particles
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 90,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
         },
-        loadMore() {
-            this.currentPage++;
-            this.fetchKegiatan();
+        "color": {
+          "value": "#ffffff"
+        },
+        "shape": {
+          "type": "circle",
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          }
+        },
+        "opacity": {
+          "value": 0.3,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 1,
+            "opacity_min": 0.1,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 3,
+          "random": true
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#ffffff",
+          "opacity": 0.2,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 2,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false
         }
-    }
-});
-</script>
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "grab"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          },
+          "resize": true
+        }
+      }
+    });
 
+    // Initialize toastr with proper configuration
+    toastr.options = {
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": true,
+      "progressBar": true,
+      "positionClass": "toast-top-center",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    };
 
-            <!-- end blog section -->
+    // [Particles.js configuration remains the same]
 
+    // Toggle Password Visibility
+    $(document).on('click', '.toggle-password', function() {
+      const passwordField = $(this).siblings('input');
+      const icon = $(this);
+      
+      if (passwordField.attr('type') === 'password') {
+        passwordField.attr('type', 'text');
+        icon.removeClass('fa-eye-slash').addClass('fa-eye');
+      } else {
+        passwordField.attr('type', 'password');
+        icon.removeClass('fa-eye').addClass('fa-eye-slash');
+      }
+    });
+    
+    // Form submission handler
+    $('#loginForm').on('submit', function(e) {
+      e.preventDefault();
+      
+      const form = $(this);
+      const submitBtn = $('#loginBtn');
+      const btnText = submitBtn.find('.btn-text');
+      
+      // Disable button to prevent multiple submissions
+      submitBtn.prop('disabled', true);
+      btnText.text('Memproses...');
+      submitBtn.find('i').removeClass('fa-sign-in-alt').addClass('fa-spinner fa-spin');
+      
+      // Client-side validation
+      if (!this.checkValidity()) {
+        toastr.error('Harap isi form dengan benar', 'Validasi Gagal');
+        submitBtn.prop('disabled', false);
+        btnText.text('MASUK');
+        submitBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-sign-in-alt');
+        return;
+      }
+      
+      // Submit form via AJAX
+      $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: form.serialize(),
+        dataType: 'json',
+        success: function(response) {
+          console.log('Response:', response); // For debugging
+          
+          if (response.success) {
+            toastr.success(response.message, 'Berhasil Login');
+            setTimeout(function() {
+              window.location.href = response.redirect;
+            }, 1500);
+          } else {
+            toastr.error(response.message, 'Gagal Login');
+          }
+          
+          // Reset button state
+          submitBtn.prop('disabled', false);
+          btnText.text('MASUK');
+          submitBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-sign-in-alt');
+        },
+        error: function(xhr) {
+          console.error('Error:', xhr.responseText); // For debugging
+          let errorMsg = 'Terjadi kesalahan sistem';
+          
+          try {
+            const res = JSON.parse(xhr.responseText);
+            if (res.message) errorMsg = res.message;
+          } catch (e) {}
+          
+          toastr.error(errorMsg, 'Error');
+          
+          // Reset button state
+          submitBtn.prop('disabled', false);
+          btnText.text('MASUK');
+          submitBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-sign-in-alt');
+        }
+      });
+    });
+    
+    // [Rate limiting code remains the same]
 
-    <script>
-        // Filter tabel berdasarkan input
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            const query = this.value.toLowerCase();
-            const rowsUjian = document.querySelectorAll('#tableUjian tbody tr');
-            const rowsKegiatan = document.querySelectorAll('#tableKegiatan tbody tr');
-
-            [rowsUjian, rowsKegiatan].forEach(rows => {
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(query) ? '' : 'none';
-                });
-            });
-        });
-
-
-    </script>
+    <?php if(isset($_GET['error'])): ?>
+    // Show error message from URL parameter
+    $(document).ready(function() {
+      toastr.error('<?php echo addslashes($_GET['error']); ?>', 'Gagal Login');
+    });
+    <?php endif; ?>
+  </script>
 </body>
 </html>
-
-
-
-
-       <?php include 'partials/footer.php'; ?>

@@ -13,7 +13,6 @@ $data = mysqli_fetch_assoc($queryUser);
 // Proses simpan data
 if (isset($_POST['simpan'])) {
     $nama_kelas = mysqli_real_escape_string($conn, $_POST['nama_kelas']);
-    $tingkat = mysqli_real_escape_string($conn, $_POST['tingkat']);
     $kompetensi_keahlian = mysqli_real_escape_string($conn, $_POST['kompetensi_keahlian']);
     $wali_kelas_id = $_POST['wali_kelas_id'] !== '' ? intval($_POST['wali_kelas_id']) : "NULL";
 
@@ -25,8 +24,8 @@ if (isset($_POST['simpan'])) {
     }
 
     // Insert ke tabel kelas
-    $query = "INSERT INTO kelas (nama_kelas, tingkat, kompetensi_keahlian, wali_kelas_id, created_at) 
-              VALUES ('$nama_kelas', '$tingkat', '$kompetensi_keahlian', $wali_kelas_id, NOW())";
+    $query = "INSERT INTO kelas (nama_kelas, kompetensi_keahlian, wali_kelas_id, created_at) 
+              VALUES ('$nama_kelas', '$kompetensi_keahlian', $wali_kelas_id, NOW())";
 
     if (mysqli_query($conn, $query)) {
         echo "<script>alert('Data kelas berhasil disimpan!'); window.location.href='dataKelas.php';</script>";
@@ -39,7 +38,6 @@ if (isset($_POST['simpan'])) {
 if (isset($_POST['update'])) {
     $id_kelas = $_POST['id_kelas'];
     $nama_kelas = mysqli_real_escape_string($conn, $_POST['nama_kelas']);
-    $tingkat = mysqli_real_escape_string($conn, $_POST['tingkat']);
     $kompetensi_keahlian = mysqli_real_escape_string($conn, $_POST['kompetensi_keahlian']);
     $wali_kelas_id = $_POST['wali_kelas_id'] !== '' ? intval($_POST['wali_kelas_id']) : "NULL";
 
@@ -51,7 +49,7 @@ if (isset($_POST['update'])) {
     }
 
     $query = "UPDATE kelas 
-              SET nama_kelas = '$nama_kelas', tingkat = '$tingkat', kompetensi_keahlian = '$kompetensi_keahlian', wali_kelas_id = $wali_kelas_id 
+              SET nama_kelas = '$nama_kelas', kompetensi_keahlian = '$kompetensi_keahlian', wali_kelas_id = $wali_kelas_id 
               WHERE id_kelas = $id_kelas";
 
     if (mysqli_query($conn, $query)) {
@@ -167,29 +165,12 @@ $guruList = mysqli_query($conn, "
             <?php endif; ?>
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 ">
                 <div class="input-style-1">
                 <label>Nama Kelas <span class="text-danger">*</span></label>
                     <input type="text" name="nama_kelas" class="form-control" required value="<?= htmlspecialchars($editData['nama_kelas'] ?? '') ?>">
                 </div>
                 </div>
-                <div class="col-md-6">
-                <div class="input-style-1">
-                <label>Tingkat <span class="text-danger">*</span></label>
-                    <select name="tingkat" class="form-control" required>
-                        <option value="">-- Pilih Tingkat --</option>
-                        <?php
-                        $tingkatList = ['X', 'XI', 'XII'];
-                        foreach ($tingkatList as $t) {
-                            $selected = ($editData['tingkat'] ?? '') === $t ? 'selected' : '';
-                            echo "<option value='$t' $selected>$t</option>";
-                        }
-                        ?>
-                    </select>
-                </div>
-            </div>
-
-            <div class="row mt-3">
                 <div class="col-md-6">
                 <div class="input-style-1">
                 <label>Kompetensi Keahlian <span class="text-danger">*</span></label>
@@ -215,7 +196,7 @@ $guruList = mysqli_query($conn, "
                    <div class="col-12">
                                     <button type="submit" name="<?= isset($editData) ? 'update' : 'simpan' ?>" 
                                             class="main-btn primary-btn btn-hover mt-3">
-                                        <?= isset($editData) ? 'Update' : 'Simpan' ?> Data Guru
+                                        <?= isset($editData) ? 'Update' : 'Simpan' ?>
                                     </button>
                                     <a href="dataKelas.php" class="main-btn light-btn btn-hover mt-3">Kembali</a>
                                 </div>

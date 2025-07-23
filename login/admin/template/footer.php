@@ -231,6 +231,28 @@ closeButton.addEventListener("click", function () {
 
         
     </script>
+    <!-- Tambahkan CSS dan JS tambahan -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<!-- 
+<script>
+$(document).ready(function() {
+    $('#siswaTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'excel', 'pdf', 'print'
+        ],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Indonesian.json"
+        },
+        "columnDefs": [
+            { "orderable": false, "targets": [0, 9] }
+        ]
+    });
+});
+</script> -->
 
             <svg
                 id="SvgjsSvg1001"

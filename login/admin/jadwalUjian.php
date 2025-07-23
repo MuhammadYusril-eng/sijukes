@@ -54,7 +54,7 @@ $jadwal_result = mysqli_query($conn, $sql);
                                         </a>
 
                                         <form method="GET" style="display:inline-block; margin-left: 10px;">
-                                            <select name="kelas_id" onchange="this.form.submit()">
+                                            <select name="kelas_id" class="main-btn" onchange="this.form.submit()">
                                                 <option value="0">-- Pilih Kelas --</option>
                                                 <?php while ($k = mysqli_fetch_assoc($kelas_result)) : ?>
                                                     <option value="<?= $k['id_kelas'] ?>" <?= ($kelas_id == $k['id_kelas']) ? 'selected' : '' ?>>
@@ -67,7 +67,7 @@ $jadwal_result = mysqli_query($conn, $sql);
                                     </div>
                                 </div>
                                 <div class="table-wrapper table-responsive">
-                                    <table class="table">
+                                    <table class="table table-stripper" id="jadwalUjian">
                                         <thead>
                                             <tr>
                                                 <th>No</th>
@@ -98,7 +98,7 @@ $jadwal_result = mysqli_query($conn, $sql);
                                                         <td><?= date('H:i', strtotime($row['jam_selesai'])) ?></td>
                                                         <td><?= htmlspecialchars($row['nama_ruangan']) ?></td>
                                                         <td><?= htmlspecialchars($row['nama_guru']) ?></td>
-                                                        <td>
+                                                        <td class="pb-1">
                                                             <a href="formJadwalUjian.php?edit=<?= $row['id'] ?>" class="btn btn-sm btn-warning">
                                                                 <i class="lni lni-pencil"></i>
                                                             </a>
@@ -119,7 +119,32 @@ $jadwal_result = mysqli_query($conn, $sql);
                             </div>
                         </div>
                     </div>
-
+ <script>
+                $(document).ready(function() {
+                    // Inisialisasi DataTables untuk tabel guru
+                    $('#jadwalUjian').DataTable({
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Indonesian.json"
+                        },
+                        "columnDefs": [
+                            { 
+                                "orderable": false, 
+                                "targets": [7] // Kolom aksi tidak bisa di-sort
+                            },
+                            { 
+                                "searchable": false, 
+                                "targets": [0, 7] // Kolom No dan Aksi tidak bisa dicari
+                            },
+                            { 
+                                "width": "80px", 
+                                "targets": [7] // Lebar kolom aksi
+                            }
+                        ],
+                        "responsive": true, // Aktifkan fitur responsive
+                        "autoWidth": false // Nonaktifkan auto width untuk kontrol manual
+                    });
+                });
+                </script>
                     <!-- Bagian Form Tambah/Edit Jadwal Ujian tetap seperti kode kamu -->
 
                 </div>

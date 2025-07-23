@@ -60,7 +60,7 @@ $data = mysqli_fetch_assoc($query);
                             <tbody>
                                 <?php
                                 $no = 1;
-                                $query = "SELECT * FROM ruangan ORDER BY nama_ruangan ASC";
+                                $query = "SELECT * FROM ruangan";
                                 $result = mysqli_query($conn, $query);
 
                                 while ($row = mysqli_fetch_assoc($result)) {

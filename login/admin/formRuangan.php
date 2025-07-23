@@ -126,10 +126,8 @@ if (isset($_GET['edit'])) {
                             
                             <div class="col-md-12">
                                 <div class="input-style-1">
-                                    <label>Lokasi</label>
-                                    <Textarea name="lokasi" class="form-control">
-                                        <?= htmlspecialchars($editData['keterangan'] ?? '') ?>
-                                </Textarea>
+                                    <label for="lokasi">Lokasi</label>
+                                    <textarea id="lokasi" name="lokasi" rows="4"><?= isset($editData['lokasi']) ? htmlspecialchars($editData['lokasi']) : '' ?></textarea>
                                 </div>
                             </div>
                             

@@ -120,6 +120,7 @@ if (isset($_GET['edit'])) {
 
 // Ambil data untuk dropdown
 $mapel_options = mysqli_query($conn, "SELECT * FROM mapel ORDER BY nama_mapel");
+$jurusan_options = mysqli_query($conn, "SELECT * FROM jurusan ORDER BY kode_jurusan");
 $kelas_options = mysqli_query($conn, "SELECT * FROM kelas ORDER BY nama_kelas");
 $guru_options = mysqli_query($conn, "SELECT g.*, u.nama FROM guru g JOIN users u ON g.user_id = u.id ORDER BY u.nama");
 $ruangan_options = mysqli_query($conn, "SELECT * FROM ruangan ORDER BY nama_ruangan");
@@ -176,6 +177,21 @@ $ruangan_options = mysqli_query($conn, "SELECT * FROM ruangan ORDER BY nama_ruan
                                                         <option value="<?= $mapel['id_mapel'] ?>" 
                                                             <?= ($editData && $editData['mapel_id'] == $mapel['id_mapel']) ? 'selected' : '' ?>>
                                                             <?= htmlspecialchars($mapel['nama_mapel']) ?>
+                                                        </option>
+                                                    <?php endwhile; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                          <div class="col-md-6">
+                                            <div class="input-style-1">
+                                                <label>Jurusan</label>
+                                                <select name="jurusan_id" class="form-control" required>
+                                                    <option value="">-- Pilih Jurusan --</option>
+                                                    <?php while ($jurusan = mysqli_fetch_assoc($jurusan_options)): ?>
+                                                        <option value="<?= $jurusan['id_jurusan'] ?>" 
+                                                            <?= ($editData && $editData == $jurusan['id_jurusan']) ? 'selected' : '' ?>>
+                                                            <?= htmlspecialchars($jurusan['kode_jurusan']) ?>
                                                         </option>
                                                     <?php endwhile; ?>
                                                 </select>

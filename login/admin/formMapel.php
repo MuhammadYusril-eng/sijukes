@@ -21,10 +21,7 @@ if (mysqli_num_rows($cekDuplikat) > 0) {
 }
 
 // Cek duplikat nama_mapel dan kode_mapel saat update (kecuali data yang sedang diedit)
-$cekDuplikat = mysqli_query($conn, "
-    SELECT * FROM mapel 
-    WHERE (nama_mapel = '$nama_mapel' OR kode_mapel = '$kode_mapel') AND id_mapel != $id_mapel
-");
+$cekDuplikat = mysqli_query($conn, "SELECT * FROM mapel WHERE (nama_mapel = '$nama_mapel' OR kode_mapel = '$kode_mapel') AND id_mapel != '$id_mapel'");
 if (mysqli_num_rows($cekDuplikat) > 0) {
     echo "<script>alert('Nama Mapel atau Kode Mapel sudah digunakan oleh data lain!'); window.history.back();</script>";
     exit;

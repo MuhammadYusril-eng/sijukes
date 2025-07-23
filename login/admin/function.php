@@ -5,7 +5,7 @@ include "./config/cek-sesi.php";
 include "../../config/koneksi.php";
 
 $sessionKodeUser = $_SESSION['user_id'];
-$query = mysqli_query($conn, "SELECT * FROM users  WHERE level='admin' AND id = '$sessionKodeUser'");
+$query = mysqli_query($conn, "SELECT * FROM users  WHERE role='admin' AND id = '$sessionKodeUser'");
 while ($row = mysqli_fetch_assoc($query)){
     $id = $row['id']; //user id value set to verify_id variable
 }

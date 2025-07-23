@@ -1,56 +1,50 @@
-import time
-import sys
+import pyodbc
+import pandas as pd
 
-lyrics = [
-    "I praise Allah for sending me you my love",
-    "You found me home and sail with me",
-    "And I'm here with you",
-    "Now let me let you know",
-    "You've opened my heart",
-    "",
-    "I was always thinking that love was wrong",
-    "But everything was changed when you came along",
-    "Oh, and there's a couple words I want to say",
-    "",
-    "(Chorus)",
-    "For the rest of my life",
-    "I'll be with you",
-    "I'll stay by your side honest and true",
-    "Till the end of my time",
-    "I'll be loving you, loving you",
-    "",
-    "For the rest of my life",
-    "Thru days and night",
-    "I'll thank Allah for open my eyes",
-    "Now and forever I'll be there for you",
-    "",
-    "(Verse)",
-    "I know that deep in my heart",
-    "I feel so blessed when I think of you",
-    "And I ask Allah to bless all we do",
-    "You're my wife and my friend and my strength",
-    "And I pray we're together in Jannah"
-]
-
-def print_scrolling_lyrics(delay=2.3):
-    max_lines = 10 
-    buffer = []    
-    
-    for line in lyrics:
-        buffer.append(line)
-        if len(buffer) > max_lines:
-            buffer.pop(0)  
+def read_mdb_file(mdb_path, password=None):
+    try:
+        # String koneksi untuk file MDB
+        if password:
+            conn_str = (
+                r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
+                r'DBQ=' + mdb_path + ';'
+                r'PWD=' + password + ';'
+            )
+        else:
+            conn_str = (
+                r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
+                r'DBQ=' + mdb_path + ';'
+            )
         
-        sys.stdout.write("\033[H\033[J") 
-        print("\n".join(buffer))
-        sys.stdout.flush()
+        # Membuat koneksi
+        conn = pyodbc.connect(conn_str)
+        cursor = conn.cursor()
         
-        time.sleep(delay)
+        # Mendapatkan daftar tabel
+        tables = cursor.tables(tableType='TABLE')
+        table_names = [table.table_name for table in tables]
+        
+        print("Daftar Tabel dalam Database:")
+        for table in table_names:
+            print(f"- {table}")
+        
+        # Membaca isi tabel pertama sebagai contoh
+        if table_names:
+            sample_table = table_names[0]
+            print(f"\nIsi tabel '{sample_table}':")
+            
+            # Menggunakan pandas untuk menampilkan data
+            df = pd.read_sql(f'SELECT * FROM [{sample_table}]', conn)
+            print(df.head())
+        
+        # Tutup koneksi
+        conn.close()
+        
+    except Exception as e:
+        print("Error:", e)
 
+# Ganti dengan path file HITFPTA.mdb Anda
+mdb_file_path = r'C:\path\to\your\HITFPTA.mdb'
 
-
-# Main program
-if __name__ == "__main__":
-    print("For The Rest Of My Life - Maher Zain\n")
-    input("Press Enter to start...")
-    print_scrolling_lyrics(delay=2.3)
+# Jika ada password, ganti None dengan password-nya
+read_mdb_file(mdb_file_path, password=None)

@@ -1,6 +1,14 @@
   <!-- ========== header start ========== -->
-  <?php 
-    ?>
+<?php
+require_once __DIR__.'/../config/cek-sesi.php';
+include "../config/koneksi.php";
+$user_id = $_SESSION['user_id'];
+$query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
+ $data = mysqli_fetch_assoc($query);
+?>
+
+
+    <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -30,7 +38,14 @@
         <link rel="stylesheet" href="../assets/css/datatable.css">
         <link rel="stylesheet" href="../assets/css/main.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
+        <!-- CSS DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+
+<!-- JavaScript DataTables -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- Pastikan jQuery dimuat SEBELUM DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
 
 

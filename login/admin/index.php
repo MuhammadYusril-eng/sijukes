@@ -1,160 +1,318 @@
 <?php
-include "./config/cek-sesi.php";
-include "../config/koneksi.php";
-$user_id = $_SESSION['user_id'];
-$query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
- $data = mysqli_fetch_assoc($query);
+require_once 'template/header.php'; 
 ?>
-
-
-
-<?php require_once 'template/header.php';?>
-<!-- ========== header end ========== -->
-<?php require_once 'template/sidebar.php';?>
+<?php require_once 'template/sidebar.php'; ?>
 
 <style>
-    .welcome-message {
-    background-color: #b8b8eb;
-    border-radius: 10px;
-    padding: 20px 40px; /* Menambahkan padding 20px atas/bawah dan 40px kiri/kanan */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 800px; /* Menambahkan lebar maksimum untuk mencegah latar belakang terlalu panjang */
-    margin: 0 auto; /* Untuk memusatkan elemen di tengah */
-}
-
-.username {
-    color: red;
-    font-weight: bold;
-}
+    /* Modern Gradient Background */
+    .welcome-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 30px;
+        color: white;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        transition: transform 0.3s ease;
+    }
+    
+    .welcome-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .welcome-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+        transform: rotate(30deg);
+    }
+    
+    .username-highlight {
+        color: #ffd700;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    /* Stat Cards */
+    .stat-card {
+        border-radius: 12px;
+        padding: 25px 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        background: white;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: white;
+        margin-right: 15px;
+    }
+    
+    .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .stat-title {
+        font-size: 14px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    /* Progress Bar */
+    .progress-container {
+        height: 8px;
+        border-radius: 4px;
+        background: #f1f1f1;
+        margin-top: 15px;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        border-radius: 4px;
+    }
+    
+    /* Responsive Grid */
+    @media (max-width: 768px) {
+        .stat-card {
+            margin-bottom: 15px;
+        }
+    }
 </style>
 
-<section class="section mt-5">
-<div class="container-sm welcome-message">
-    <h2>Selamat datang di Dashboard Administrator, <span class="username"><?php echo $_SESSION['username'] ?></span></h2>
-    <p>Terima kasih telah menggunakan layanan kami.</p>
-</div>
-
-</section>
-
-<?php
-// Fungsi untuk menghitung total baris dari sebuah tabel
-function getTotalData($conn, $tableName) {
-    $query = mysqli_query($conn, "SELECT COUNT(*) as total FROM $tableName");
-    $data = mysqli_fetch_assoc($query);
-    return $data['total'];
-}
-
-// Fungsi untuk hitung persentase (dummy contoh berdasarkan total maksimum 100)
-function getPersentase($total, $max = 100) {
-    if ($max <= 0) return 0;
-    $persen = ($total / $max) * 100;
-    return ($persen > 100) ? 100 : round($persen, 2);
-}
-
-// Total Pengguna (contoh: tabel users)
-$totalPengguna = getTotalData($conn, 'users');
-$persenPengguna = getPersentase($totalPengguna, 100); // atau sesuaikan
-
-// Total Jadwal Ujian
-$totalJadwalUjian = getTotalData($conn, 'jadwal_ujian');
-$persenJadwalUjian = getPersentase($totalJadwalUjian, 50); // misal maksimal 50 jadwal
-
-// Total Kegiatan Sekolah
-$totalKegiatan = getTotalData($conn, 'kegiatan');
-$persenKegiatan = getPersentase($totalKegiatan, 30); // misal target 30 kegiatan
-
-
-                                ?>
-<!-- ========== section start ========== -->
-<section class="section mt-5">
+<section class="section">
     <div class="container-fluid">
-        <!-- ========== title-wrapper start ========== -->
+        
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2 class="mb-3">Selamat Datang, <span class="username-highlight"><?php echo htmlspecialchars($_SESSION['username']); ?></span></h2>
+            <p class="mb-0">Anda login sebagai <strong><?php echo ucfirst($_SESSION['role']); ?></strong>. Terakhir diupdate: <?php echo date('d F Y H:i'); ?></p>
+        </div>
 
-        <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 mb-30">
-    <div class="row">
-        <!-- Kartu Jumlah Pengguna -->
-        <div class="col-xxl-4 col-lg-4 col-md-8 col-sm-4 col-12">
-            <div class="icon-card icon-card-2 mb-30">
-                <div class="d-flex align-items-center mb-20">
-                    <div class="icon purple">
-                        <i class="lni lni-users"></i>
+        <!-- Statistics Row -->
+        <div class="row">
+            <?php
+            // Fungsi untuk mendapatkan data dinamis dari database
+
+// Fungsi untuk mendapatkan statistik dashboard (MySQLi version)
+function getDashboardStats($conn) {
+    $stats = [];
+    
+    // Total Pengguna
+    $result = $conn->query("SELECT COUNT(*) as total FROM users");
+    $stats['users'] = $result->fetch_assoc()['total'];
+    
+    // Total Guru
+    $result = $conn->query("SELECT COUNT(*) as total FROM guru");
+    $stats['teachers'] = $result->fetch_assoc()['total'];
+    
+    // Total Siswa
+    $result = $conn->query("SELECT COUNT(*) as total FROM siswa");
+    $stats['students'] = $result->fetch_assoc()['total'];
+    
+    // Total Jadwal Ujian
+    $result = $conn->query("SELECT COUNT(*) as total FROM jadwal_ujian");
+    $stats['exams'] = $result->fetch_assoc()['total'];
+    
+    // Total Kegiatan
+    $result = $conn->query("SELECT COUNT(*) as total FROM kegiatan");
+    $stats['activities'] = $result->fetch_assoc()['total'];
+    
+    // Total Mapel
+    $result = $conn->query("SELECT COUNT(*) as total FROM mapel");
+    $stats['subjects'] = $result->fetch_assoc()['total'];
+    
+    return $stats;
+}
+
+// Dapatkan statistik
+$stats = getDashboardStats($conn);
+?>
+
+  
+            
+            <!-- User Card -->
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo $stats['users']; ?></div>
+                            <div class="stat-title">Total Pengguna</div>
+                        </div>
                     </div>
-                    <div class="content">
-                        <h6 class="">Total Pengguna</h6>
-                        <h3 class="text-bold"><?php echo $totalPengguna; ?></h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: <?php echo min(100, ($stats['users']/50)*100); ?>%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
                     </div>
                 </div>
-                <div class="progress bg-purple-100">
-                    <div class="progress-bar purple-bg" role="progressbar" style="width: <?php echo $persenPengguna; ?>%" aria-valuenow="<?php echo $persenPengguna; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            
+            <!-- Teacher Card -->
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo $stats['teachers']; ?></div>
+                            <div class="stat-title">Guru</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: <?php echo min(100, ($stats['teachers']/30)*100); ?>%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Student Card -->
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo $stats['students']; ?></div>
+                            <div class="stat-title">Siswa</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: <?php echo min(100, ($stats['students']/200)*100); ?>%; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Exam Card -->
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo $stats['exams']; ?></div>
+                            <div class="stat-title">Jadwal Ujian</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: <?php echo min(100, ($stats['exams']/20)*100); ?>%; background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Card -->
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo $stats['activities']; ?></div>
+                            <div class="stat-title">Kegiatan</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: <?php echo min(100, ($stats['activities']/15)*100); ?>%; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Subject Card -->
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc3a0 0%, #ffafbd 100%);">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo $stats['subjects']; ?></div>
+                            <div class="stat-title">Mata Pelajaran</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: <?php echo min(100, ($stats['subjects']/20)*100); ?>%; background: linear-gradient(135deg, #ffc3a0 0%, #ffafbd 100%);"></div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Kartu Jadwal Ujian -->
-        <div class="col-xxl-4 col-lg-4 col-md-8 col-sm-4 col-12">
-            <div class="icon-card icon-card-2 mb-30">
-                <div class="d-flex align-items-center mb-20">
-                    <div class="icon red">
-                        <i class="lni lni-calendar"></i>
+        
+        <!-- Recent Activities Section -->
+        <!-- Recent Activities Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Kegiatan Terbaru</h5>
                     </div>
-                    <div class="content">
-                        <h6 class="">Jadwal Ujian</h6>
-                        <h3 class="text-bold"><?php echo $totalJadwalUjian; ?></h3>
+                    <div class="card-body">
+                        <?php
+                        $result = $conn->query("SELECT * FROM kegiatan ORDER BY tanggal_mulai DESC LIMIT 5");
+                        
+                        if ($result->num_rows > 0) {
+                            echo '<div class="table-responsive">';
+                            echo '<table class="table table-hover">';
+                            echo '<thead>
+                                    <tr>
+                                        <th>Judul</th>
+                                        <th>Tanggal</th>
+                                        <th>Lokasi</th>
+                                        <th>Untuk</th>
+                                    </tr>
+                                  </thead>';
+                            echo '<tbody>';
+                            
+                            while($activity = $result->fetch_assoc()) {
+                                echo '<tr>
+                                        <td>'.htmlspecialchars($activity['judul']).'</td>
+                                        <td>'.date('d M Y', strtotime($activity['tanggal_mulai']));
+                                if ($activity['tanggal_selesai'] && $activity['tanggal_selesai'] != $activity['tanggal_mulai']) {
+                                    echo ' - '.date('d M Y', strtotime($activity['tanggal_selesai']));
+                                }
+                                echo '</td>
+                                        <td>'.htmlspecialchars($activity['lokasi']).'</td>
+                                        <td><span class="badge bg-'.($activity['ditujukan_untuk'] == 'semua' ? 'primary' : ($activity['ditujukan_untuk'] == 'guru' ? 'info' : 'success')).'">'.ucfirst($activity['ditujukan_untuk']).'</span></td>
+                                      </tr>';
+                            }
+                            
+                            echo '</tbody>';
+                            echo '</table>';
+                            echo '</div>';
+                        } else {
+                            echo '<div class="alert alert-info">Tidak ada kegiatan terbaru</div>';
+                        }
+                        ?>
                     </div>
-                </div>
-                <div class="progress bg-red-100">
-                    <div class="progress-bar red-bg" role="progressbar" style="width: <?php echo $persenJadwalUjian; ?>%" aria-valuenow="<?php echo $persenJadwalUjian; ?>" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
         </div>
-
-        <!-- Kartu Kegiatan -->
-        <div class="col-xxl-4 col-lg-4 col-md-8 col-sm-4 col-12">
-            <div class="icon-card icon-card-2 mb-30">
-                <div class="d-flex align-items-center mb-20">
-                    <div class="icon success">
-                        <i class="lni lni-bullhorn"></i>
-                    </div>
-                    <div class="content">
-                        <h6 class="">Kegiatan Sekolah</h6>
-                        <h3 class="text-bold"><?php echo $totalKegiatan; ?></h3>
-                    </div>
-                </div>
-                <div class="progress bg-green-100">
-                    <div class="progress-bar success-bg" role="progressbar" style="width: <?php echo $persenKegiatan; ?>%" aria-valuenow="<?php echo $persenKegiatan; ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Kartu Artikel -->
-        <!-- <div class="col-xxl-3 col-lg-4 col-md-8 col-sm-4 col-12">
-            <div class="icon-card icon-card-2 mb-30">
-                <div class="d-flex align-items-center mb-20">
-                    <div class="icon secondary">
-                        <i class="lni lni-pencil"></i>
-                    </div>
-                    <div class="content">
-                        <h6 class="">Artikel</h6>
-                        <h3 class="text-bold"><?php echo $totalArtikel; ?></h3>
-                    </div>
-                </div>
-                <div class="progress bg-secondary-100">
-                    <div class="progress-bar secondary-bg" role="progressbar" style="width: <?php echo $persenArtikel; ?>%" aria-valuenow="<?php echo $persenArtikel; ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </div> -->
     </div>
-</div>
-
-        <!-- end col -->
-    </div>
-    </div>
-    <!-- end container -->
+    
 </section>
-</main>
-<!-- ========== section end ========== -->
-<!-- ======== main-wrapper end =========== -->
-<!-- CHANGE THEME -->
 
-<?php include './template/footer.php' ?>
+<?php include './template/footer.php'; ?>

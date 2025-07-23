@@ -3,9 +3,9 @@
             <aside class="sidebar-nav-wrapper">
                 <div class="navbar-logo">
                     <a href="index.html">
-                        <img src="../../assets/images/logo/tidoreKota.png" alt="logo">
+                        <img src="../assets/images/logo.png" alt="logo">
                     </a>
-                    <h6 class="mt-2">TERNATE</h6>
+                    <h6 class="mt-2">SMK Negeri 5 Tidore Kepulauan</h6>
                 </div>
                 <nav class="sidebar-nav">
                     <ul>
@@ -43,6 +43,7 @@
                             <li class="nav-item"><a href="dataSiswa.php"><span class="text">Data Siswa</span></a></li>
                             <li class="nav-item"><a href="dataKelas.php"><span class="text">Data Kelas</span></a></li>
                              <li class="nav-item"><a href="dataMapel.php"><span class="text">Data Mapel</span></a></li>
+                             <li class="nav-item"><a href="dataJurusan.php"><span class="text">Data Jurusan</span></a></li>
                             <li class="nav-item"><a href="dataRuangan.php"><span class="text">Data Ruangan</span></a></li>
                         </ul>
                     </li>

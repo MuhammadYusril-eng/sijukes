@@ -49,7 +49,6 @@ $data = mysqli_fetch_assoc($query);
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Kelas</th>
-                                    <th>Tingkat</th>
                                     <th>Kompetensi Keahlian</th>
                                     <th>Wali Kelas</th>
                                     <th>Aksi</th>
@@ -72,7 +71,6 @@ $data = mysqli_fetch_assoc($query);
                                     <tr>
                                         <td><p><?= $no++; ?></p></td>
                                         <td><p><?= htmlspecialchars($row['nama_kelas']); ?></p></td>
-                                        <td><p><?= htmlspecialchars($row['tingkat']); ?></p></td>
                                         <td><p><?= htmlspecialchars($row['kompetensi_keahlian']); ?></p></td>
                                         <td><p><?= $row['wali_kelas'] ? htmlspecialchars($row['wali_kelas']) : '-'; ?></p></td>
                                         <td>

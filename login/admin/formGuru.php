@@ -5,6 +5,11 @@ $user_id = $_SESSION['user_id'];
 $query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
 $data = mysqli_fetch_assoc($query);    
 
+
+
+
+
+
 // Proses simpan data
 if (isset($_POST['simpan'])) {
     $nama = mysqli_real_escape_string($conn, $_POST['nama']);
@@ -17,13 +22,18 @@ if (isset($_POST['simpan'])) {
     $no_telp = mysqli_real_escape_string($conn, $_POST['no_telp']);
 
     // Cek duplikat username, email, atau nip
-    $cekDuplikat = mysqli_query($conn, "SELECT u.username, u.email, g.nip 
-        FROM users u 
-        LEFT JOIN guru g ON u.id = g.user_id 
-        WHERE u.username = '$username' OR u.email = '$email' OR g.nip = '$nip'");
+       $cekDuplikat = mysqli_query($conn, "
+    SELECT u.username, g.nip 
+    FROM users u 
+    LEFT JOIN guru g ON u.id = g.user_id 
+    WHERE u.role = 'guru' AND (u.username = '$username' OR g.nip = '$nip')
+");
+
+
+            
     
     if (mysqli_num_rows($cekDuplikat) > 0) {
-        echo "<script>alert('Username, Email, atau NIP sudah digunakan!'); window.history.back();</script>";
+        echo "<script>alert('Username, atau NIP sudah Terdaftar!'); window.history.back();</script>";
         exit;
     }
 
@@ -38,27 +48,23 @@ if (isset($_POST['simpan'])) {
         $query_guru = "INSERT INTO guru (user_id, nip, jenis_kelamin, alamat, no_telp, created_at) 
                       VALUES ('$user_id', '$nip', '$jenis_kelamin', '$alamat', '$no_telp', NOW())";
         
-        if (mysqli_query($conn, $query_guru)) {
-            // Proses mata pelajaran yang diajarkan
-            if (isset($_POST['mapel_id'])) {
-                $guru_id = mysqli_insert_id($conn);
-                foreach ($_POST['mapel_id'] as $mapel_id) {
-                    $mapel_id = mysqli_real_escape_string($conn, $mapel_id);
-                    mysqli_query($conn, "INSERT INTO guru_mapel (guru_id, mapel_id, created_at) VALUES ('$guru_id', '$mapel_id', NOW())");
-                }
+           if (mysqli_query($conn, $query_guru)) {
+        $guru_id = mysqli_insert_id($conn);
+        
+        // Proses mata pelajaran yang diajarkan
+        if (isset($_POST['mapel_id'])) {
+            foreach ($_POST['mapel_id'] as $mapel_id) {
+                $mapel_id = mysqli_real_escape_string($conn, $mapel_id);
+                $query_mapel = "INSERT INTO guru_mapel (guru_id, mapel_id, created_at) 
+                               VALUES ('$guru_id', '$mapel_id', NOW())";
+                mysqli_query($conn, $query_mapel);
             }
-            
-            echo "<script>alert('Data guru berhasil disimpan!'); window.location.href='dataGuru.php';</script>";
-        } else {
-            // Jika gagal insert guru, hapus user yang sudah dibuat
-            mysqli_query($conn, "DELETE FROM users WHERE id = '$user_id'");
-            echo "<script>alert('Gagal menyimpan data guru.');</script>";
         }
-    } else {
-        echo "<script>alert('Gagal menyimpan data user.');</script>";
+        
+        echo "<script>alert('Data guru berhasil disimpan!'); window.location.href='dataGuru.php';</script>";
     }
 }
-
+}
 // Proses update data
 if (isset($_POST['update'])) {
     $id = $_POST['id'];
@@ -78,7 +84,7 @@ if (isset($_POST['update'])) {
     // Cek duplikat selain dari data ini sendiri
     $cekDuplikat = mysqli_query($conn, "SELECT u.id AS uid, g.id AS gid FROM users u 
         LEFT JOIN guru g ON u.id = g.user_id 
-        WHERE (u.username = '$username' OR u.email = '$email' OR g.nip = '$nip') 
+        WHERE (u.username = '$username' OR g.nip = '$nip') 
         AND u.id != $current_user_id");
     
     if (mysqli_num_rows($cekDuplikat) > 0) {
@@ -230,13 +236,70 @@ $mapel_options = mysqli_query($conn, "SELECT * FROM mapel ORDER BY nama_mapel");
                                     </div>
                                 </div>
                                 
-                                <div class="col-md-6">
-                                    <div class="input-style-1">
-                                        <label>Password <?= !isset($editData) ? '<span class="text-danger">*</span>' : '(Kosongkan jika tidak diubah)' ?></label>
-                                        <input type="password" name="password" class="form-control" <?= !isset($editData) ? 'required' : '' ?>>
-                                    </div>
-                                </div>
-                                
+                 <div class="col-md-6">
+    <div class="input-style-1">
+        <label>Password <?= !isset($editData) ? '<span class="text-danger">*</span>' : '(Kosongkan jika tidak diubah)' ?></label>
+        <div class="input-group">
+            <input type="password" name="password" id="password" class="form-control" <?= !isset($editData) ? 'required' : '' ?>>
+            <button class="btn btn-outline-secondary" type="button" id="generatePassword">
+                <i class="lni lni-magic"></i> Generate
+            </button>
+            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                <i class="lni lni-eye"></i>
+            </button>
+        </div>
+        <small class="form-text text-muted">Password random 8 karakter (huruf dan angka)</small>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const generateBtn = document.getElementById('generatePassword');
+    const toggleBtn = document.getElementById('togglePassword');
+    let passwordVisible = false;
+
+    // Fungsi generate password random
+    function generateRandomPassword() {
+        const chars = 'abcdefghijklmnopqrstuvwxyz';
+        const numbers = '0123456789';
+        let password = '';
+        
+        // Generate 4 random huruf
+        for (let i = 0; i < 4; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        // Generate 4 random angka
+        for (let i = 0; i < 4; i++) {
+            password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+        }
+        
+        // Acak lagi posisi karakter
+        password = password.split('').sort(() => 0.5 - Math.random()).join('');
+        
+        return password;
+    }
+
+    // Fungsi generate password
+    function generatePassword() {
+        passwordInput.value = generateRandomPassword();
+    }
+
+    // Toggle show/hide password
+    function togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+        passwordInput.type = passwordVisible ? "text" : "password";
+        toggleBtn.innerHTML = passwordVisible ? 
+            '<i class="lni lni-eye-crossed"></i>' : 
+            '<i class="lni lni-eye"></i>';
+    }
+
+    // Event listeners
+    if (generateBtn) generateBtn.addEventListener('click', generatePassword);
+    if (toggleBtn) toggleBtn.addEventListener('click', togglePasswordVisibility);
+});
+</script>
                                 <div class="col-md-6">
                                     <div class="input-style-1">
                                         <label>Email</label>
@@ -271,22 +334,22 @@ $mapel_options = mysqli_query($conn, "SELECT * FROM mapel ORDER BY nama_mapel");
                                     </div>
                                 </div>
                                 
-                             <div class="col-md-6">
-                            <div class="input-style-1">
-                                <label>Mata Pelajaran yang Diajarkan</label>
-                                <select name="mapel_id" class="form-control" required>
-                                    <option value="">-- Pilih Mata Pelajaran --</option>
-                                    <?php 
-                                    mysqli_data_seek($mapel_options, 0);
-                                    while ($mapel = mysqli_fetch_assoc($mapel_options)): 
-                                        $selected = ($mapel['id_mapel'] == $editMapel[0]) ? 'selected' : '';
-                                    ?>
-                                        <option value="<?= $mapel['id_mapel'] ?>" <?= $selected ?>>
-                                            <?= htmlspecialchars($mapel['nama_mapel']) ?>
-                                        </option>
-                                    <?php endwhile; ?>
-                                </select>
-                            </div>
+                            <div class="col-md-6">
+                                <div class="input-style-1">
+                                    <label>Mata Pelajaran yang Diajarkan <span class="text-danger">*</span></label>
+                                    <select name="mapel_id[]" class="form-control" multiple required>
+                                        <?php 
+                                        mysqli_data_seek($mapel_options, 0);
+                                        while ($mapel = mysqli_fetch_assoc($mapel_options)): 
+                                            $selected = in_array($mapel['id_mapel'], $editMapel) ? 'selected' : '';
+                                        ?>
+                                            <option value="<?= $mapel['id_mapel'] ?>" <?= $selected ?>>
+                                                <?= htmlspecialchars($mapel['nama_mapel']) ?>
+                                            </option>
+                                        <?php endwhile; ?>
+                                    </select>
+                                    <small class="form-text text-muted">Gunakan Ctrl/Cmd untuk memilih lebih dari satu</small>
+                                </div>
                             </div>
                                 
                                 <div class="col-12">
